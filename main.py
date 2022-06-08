@@ -1,7 +1,9 @@
 # Python
 import json
 from datetime import date, datetime
+from tkinter.filedialog import Open
 from typing import Optional, List
+from unittest import result
 from uuid import UUID
 
 # Pydantic
@@ -111,7 +113,21 @@ def login():
     tags=["Users"]
 )
 def show_all_users():
-    pass
+    """
+    This path operations show all users in the App
+    
+    - Parameters: -
+    
+    - Returns a JSON List with all users in the App, with the following keys:
+        - user_id: UUID
+        - email: EmailStr
+        - first_name: str
+        - last_name: str
+        - birth_date: datetime
+    """
+    with open(file="users.json", mode="r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        return results
 
 ### --- Show a User
 @app.get(
