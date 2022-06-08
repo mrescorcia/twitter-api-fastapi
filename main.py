@@ -1,4 +1,5 @@
 # Python
+import json
 from datetime import date, datetime
 from typing import Optional, List
 from uuid import UUID
@@ -7,7 +8,7 @@ from uuid import UUID
 from pydantic import BaseModel, EmailStr, Field
 
 # FastAPI
-from fastapi import FastAPI, status
+from fastapi import Body, FastAPI, status
 
 app = FastAPI()
 
@@ -65,22 +66,31 @@ class Tweet(BaseModel):
     summary="Register a User",
     tags=["Users"]
 )
-def signup():
+def signup(user: UserRegister = Body(...)):
     """
     This path operation register a User in the App
     
-    Parameters: 
+    - Parameters: 
         - Requests Body Parameter
             - user: UserRegister
             
-    Returns a JSON with a User Basic Information
+    - Returns a JSON with a User Basic Information
         - user_id: UUID
         - email: EmailStr
         - first_name: str
         - last_name: str
-        - birth_date: str
+        - birth_date: datetime
     """
-
+    with open(file="users.json", mode="r+", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        user_dict = user.dict()
+        user_dict['user_id'] =  str(user_dict['user_id'])
+        user_dict['birth_date'] = str(user_dict['birth_date'])
+        results.append(user_dict)
+        f.seek(0) #-> con este método lo que se hace es moverse a traves de los bytes del archivo. Nos Pposicionamos en el byte 0, al inicio del archivo
+        f.write(json.dumps(results))
+        return user
+        
 ### --- Login a User
 @app.post(
     path="/login",
